@@ -5,7 +5,6 @@ from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from openai import OpenAI
 import chromadb
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 legalmind_bp = Blueprint('legalmind', __name__)
 
@@ -16,13 +15,33 @@ client = OpenAI()
 vector_db_client = chromadb.PersistentClient(path="./legal_vector_db")
 legal_chunks_collection = vector_db_client.get_or_create_collection(name="legal_document_chunks")
 
-# Text splitter for chunking documents
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=200,
-    length_function=len,
-    is_separator_regex=False,
-)
+# Simple text splitter for chunking documents
+def simple_text_splitter(text, chunk_size=1000, chunk_overlap=200):
+    """Simple text splitter that splits text into chunks with overlap."""
+    if len(text) <= chunk_size:
+        return [text]
+    
+    chunks = []
+    start = 0
+    while start < len(text):
+        end = start + chunk_size
+        if end >= len(text):
+            chunks.append(text[start:])
+            break
+        
+        # Try to split at a sentence boundary
+        chunk = text[start:end]
+        last_period = chunk.rfind('.')
+        last_newline = chunk.rfind('\n')
+        split_point = max(last_period, last_newline)
+        
+        if split_point > start + chunk_size // 2:  # Only split if we're not too far back
+            end = start + split_point + 1
+        
+        chunks.append(text[start:end])
+        start = end - chunk_overlap
+    
+    return chunks
 
 def get_embedding(text, model="text-embedding-ada-002"):
     """Generate embedding for text using OpenAI."""
@@ -301,7 +320,7 @@ def ingest_sample_data():
         
         for doc in sample_documents:
             # Chunk the text
-            chunks = text_splitter.split_text(doc["text"])
+            chunks = simple_text_splitter(doc["text"])
             
             embeddings = []
             documents = []
