@@ -1,3 +1,31 @@
+# COPY THESE FILES TO YOUR LOCAL DIRECTORY
+
+## Step 1: Open Cursor on your desktop
+Navigate to: `C:\Users\USER\Desktop\legalmind-backend`
+
+## Step 2: Replace these files
+
+### 1. Replace `requirements.txt` with this content:
+```
+blinker==1.9.0
+click==8.2.1
+Flask==3.1.1
+flask-cors==6.0.0
+Flask-SQLAlchemy==3.1.1
+itsdangerous==2.2.0
+Jinja2==3.1.6
+MarkupSafe==3.0.2
+SQLAlchemy==2.0.41
+typing_extensions==4.14.0
+Werkzeug==3.1.3
+gunicorn==21.2.0
+openai==1.3.0
+chromadb==0.4.15
+numpy>=1.21.0
+```
+
+### 2. Replace `src/routes/legalmind.py` with this content:
+```python
 import os
 import json
 import tempfile
@@ -363,4 +391,22 @@ def ingest_sample_data():
 def health_check():
     """Health check endpoint."""
     return jsonify({'status': 'healthy', 'service': 'LegalMind AI'})
+```
 
+### 3. Make sure you have these files (they should already exist):
+- `nixpacks.toml`
+- `Procfile`
+- `start.sh`
+- `runtime.txt`
+
+## Step 3: Push to GitHub
+```bash
+git add .
+git commit -m "Fix dependency conflicts - remove LangChain"
+git push
+```
+
+## Step 4: Deploy on Railway
+Railway should automatically redeploy and work! 🚀
+
+## That's it! Your deployment should work now! ✅
