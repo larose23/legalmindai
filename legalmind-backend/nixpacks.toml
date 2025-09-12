@@ -12,3 +12,4 @@ cmd = "./start.sh"
 
 [variables]
 PORT = "5000"
+CHROMA_DB_DIR = "/data/chroma"

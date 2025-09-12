@@ -5,14 +5,23 @@ from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from openai import OpenAI
 import chromadb
+import os
 
 legalmind_bp = Blueprint('legalmind', __name__)
 
 # Initialize OpenAI client
 client = OpenAI()
 
-# Initialize ChromaDB
-vector_db_client = chromadb.PersistentClient(path="./legal_vector_db")
+# Initialize ChromaDB in a clean, writable location
+CHROMA_DB_DIR = os.environ.get("CHROMA_DB_DIR", "/data/chroma")
+try:
+    os.makedirs(CHROMA_DB_DIR, exist_ok=True)
+except Exception:
+    # Fallback to /tmp if /data is not writable
+    CHROMA_DB_DIR = "/tmp/chroma"
+    os.makedirs(CHROMA_DB_DIR, exist_ok=True)
+
+vector_db_client = chromadb.PersistentClient(path=CHROMA_DB_DIR)
 legal_chunks_collection = vector_db_client.get_or_create_collection(name="legal_document_chunks")
 
 # Simple text splitter for chunking documents

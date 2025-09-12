@@ -8,5 +8,7 @@ __pycache__/
 .vscode/
 .DS_Store
 *.zip
+legal_vector_db/
+src/database/*.db
 
 

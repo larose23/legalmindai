@@ -27,6 +27,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 with app.app_context():
     db.create_all()
+    # Ensure Chroma DB dir exists (keeps in sync with start.sh)
+    os.makedirs(os.environ.get('CHROMA_DB_DIR', '/data/chroma'), exist_ok=True)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

@@ -14,7 +14,8 @@ fi
 
 # Create necessary directories
 mkdir -p src/database
-mkdir -p legal_vector_db
+mkdir -p /data/chroma || true
+export CHROMA_DB_DIR=${CHROMA_DB_DIR:-/data/chroma}
 
 # Start the application
 echo "🌐 Starting Gunicorn on port $PORT..."
